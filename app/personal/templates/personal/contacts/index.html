@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3">
+  <!-- Sidebar -->
+  <div class="col-12 col-md-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h6">Company</h2>
+        <div class="list-group list-group-flush">
+          <a href="{{ url_for('contacts.index') }}"
+             class="list-group-item list-group-item-action {{ 'active' if not active_company else '' }}">
+            All
+          </a>
+          {% for c in companies %}
+            <a href="{{ url_for('contacts.index', company=c) }}"
+               class="list-group-item list-group-item-action {{ 'active' if active_company==c else '' }}">
+              {{ c }}
+            </a>
+          {% endfor %}
+        </div>
+
+        <hr>
+
+        {% if is_admin %}
+          <!-- Add one contact -->
+          <form class="d-grid gap-2" action="{{ url_for('contacts.add_one') }}" method="post">
+            <label class="form-label small mb-1">Add one contact</label>
+            <input class="form-control form-control-sm" name="name"    placeholder="Name">
+            <input class="form-control form-control-sm" name="email"   placeholder="Email (required)" required>
+            <input class="form-control form-control-sm" name="phone"   placeholder="Phone">
+            <input class="form-control form-control-sm" name="company" placeholder="Company">
+            <input class="form-control form-control-sm" name="role"    placeholder="Role">
+            <input class="form-control form-control-sm" name="remarks" placeholder="Remarks">
+            <button class="btn btn-sm btn-success" type="submit">Add</button>
+          </form>
+
+          <hr>
+
+          <!-- Import / Export -->
+          <form class="d-grid gap-2" action="{{ url_for('contacts.import_csv') }}" method="post" enctype="multipart/form-data">
+            <label class="form-label small">Import CSV</label>
+            <input class="form-control form-control-sm" type="file" name="file" accept=".csv">
+            <button class="btn btn-sm btn-primary" type="submit">Import</button>
+          </form>
+          <a class="btn btn-sm btn-outline-secondary mt-2 w-100" href="{{ url_for('contacts.export_csv') }}">
+            Export CSV
+          </a>
+        {% else %}
+          <div class="alert alert-info small mb-2">Login as admin to add or import.</div>
+
+          <form class="d-grid gap-2">
+            <label class="form-label small mb-1">Add one contact</label>
+            <input class="form-control form-control-sm" placeholder="Name" disabled>
+            <input class="form-control form-control-sm" placeholder="Email (required)" disabled>
+            <input class="form-control form-control-sm" placeholder="Phone" disabled>
+            <input class="form-control form-control-sm" placeholder="Company" disabled>
+            <input class="form-control form-control-sm" placeholder="Role" disabled>
+            <input class="form-control form-control-sm" placeholder="Remarks" disabled>
+            <button class="btn btn-sm btn-success" disabled>Add</button>
+          </form>
+
+          <hr>
+
+          <form class="d-grid gap-2">
+            <label class="form-label small">Import CSV</label>
+            <input class="form-control form-control-sm" type="file" disabled>
+            <button class="btn btn-sm btn-primary" disabled>Import</button>
+          </form>
+          <a class="btn btn-sm btn-outline-secondary mt-2 w-100 disabled" role="button" aria-disabled="true">
+            Export CSV
+          </a>
+        {% endif %}
+
+        <div class="mt-3 small text-muted">
+          CSV headers: <code>name,email,phone,company,role,remarks</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="col-12 col-md-9">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h1 class="h5 m-0">Contact List</h1>
+      <div class="input-group input-group-sm" style="width: 360px;">
+        <input type="text" class="form-control" id="searchBox"
+               placeholder="Search name/email/phone/company/role">
+        <button class="btn btn-outline-primary" type="button" onclick="copySelectedEmails()">
+          Copy Selected
+        </button>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0" id="contactsTable">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th style="width:1%"></th> <!-- Copy (no heading) -->
+              <th>IM</th>
+              <th>Phone</th>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Remarks</th>
+              <th style="width:1%; text-align:center;">
+                <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if rows %}
+              {% for r in rows %}
+                <tr>
+                  <td>{{ r.name or '—' }}</td>
+                  <td>
+                    {% if r.email %}
+                      <a href="mailto:{{ r.email }}">{{ r.email }}</a>
+                    {% else %} — {% endif %}
+                  </td>
+
+                  <!-- Copy button just after Email -->
+                  <td>
+                    {% if r.email %}
+                      <button type="button" class="btn btn-sm btn-outline-secondary"
+                              onclick="copyOneEmail('{{ r.email }}')">
+                        Copy
+                      </button>
+                    {% endif %}
+                  </td>
+                  <!-- IM column (uses email) -->
+                  <td>
+                    {% if r.email %}
+                      <a href="im:{{ r.email }}" class="text-decoration-none">
+                        <i class="bi bi-chat-dots me-1" onclick="copyOneEmail('{{ r.email }}')"></i>
+                      </a>
+                    {% else %} — {% endif %}
+                  </td>
+                  <td>
+                    {% if r.phone %}
+                      <a class="text-decoration-none" href="tel:{{ r.phone }}">
+                        <i class="bi bi-telephone-fill me-1"></i>{{ r.phone }}
+                      </a>
+                    {% else %} — {% endif %}
+                  </td>
+                  <td>{{ r.company or '—' }}</td>
+                  <td>{{ r.role or '—' }}</td>
+                  <td class="text-muted">{{ r.remarks or '—' }}</td>
+
+                  <!-- Select checkbox (for Copy Selected) -->
+                  <td class="text-center">
+                    {% if r.email %}
+                      <input type="checkbox" class="row-check" data-email="{{ r.email }}">
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="8" class="text-center text-muted">
+                  No data. Import a CSV or add a contact to get started.
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS helpers -->
+<script>
+function toggleAll(cb){
+  document.querySelectorAll('.row-check').forEach(x => x.checked = cb.checked);
+}
+function collectEmails(selectedOnly){
+  const checks = Array.from(document.querySelectorAll('.row-check'));
+  const emails = checks
+    .filter(c => (!selectedOnly) || c.checked)
+    .map(c => c.getAttribute('data-email'))
+    .filter(e => e && e.trim().length>0);
+  return [...new Set(emails)].join('; ');
+}
+function copySelectedEmails(){
+  const s = collectEmails(true);
+  if(!s){ alert('No emails selected.'); return; }
+  navigator.clipboard.writeText(s);
+}
+function copyOneEmail(email){
+  if(!email) return;
+  navigator.clipboard.writeText(email);
+}
+/* Live search */
+document.getElementById("searchBox").addEventListener("keyup", function(){
+  const q = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#contactsTable tbody tr");
+  rows.forEach(row => {
+    row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+  });
+});
+</script>
+{% endblock %}

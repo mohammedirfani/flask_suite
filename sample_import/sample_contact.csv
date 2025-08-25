@@ -1,0 +1,6 @@
+name,email,phone,company,role,remarks
+Alice Johnson,alice.johnson@example.com,+65 8123 4567,OpenAI,Solution Architect,Key stakeholder
+Bob Tan,bob.tan@example.com,+65 9765 4321,Singtel,Network Engineer,Supports WAN
+Charlie Lee,charlie.lee@example.com,+65 9333 1122,Cisco,Account Manager,Main vendor contact
+Diana Lim,diana.lim@example.com,+65 8111 2233,DBS Bank,IT Manager,Manages infra team
+Ethan Wong,ethan.wong@example.com,+65 9000 4455,StarHub,Security Analyst,Specialises in firewalls

@@ -1,0 +1,17 @@
+.tile {
+border-radius:1rem;transition:transform .08s,box-shadow .08s
+}
+
+.tile:hover{
+transform:translateY(-1px);box-shadow:0 .5rem 1rem rgba(0,0,0,.15)
+}
+
+/* app/static/css/style.css */
+
+.cucm-nav {
+  background-color: #1b1f3b !important; /* dark navy */
+}
+
+.cucm-bg {
+  background-color: #f4f6f9; /* light gray body background */
+}
