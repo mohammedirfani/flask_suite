@@ -85,7 +85,8 @@
       <div class="input-group input-group-sm" style="width: 360px;">
         <input type="text" class="form-control" id="searchBox"
                placeholder="Search name/email/phone/company/role">
-        <button class="btn btn-outline-primary" type="button" onclick="copySelectedEmails()">
+        <button class="btn btn-outline-primary" type="button" onclick="copyText(Array.from(document.querySelectorAll('.row-check:checked'))
+          .map(cb => cb.getAttribute('data-email')).filter(Boolean).join(', '))">
           Copy Selected
         </button>
       </div>
@@ -124,7 +125,7 @@
                   <td>
                     {% if r.email %}
                       <button type="button" class="btn btn-sm btn-outline-secondary"
-                              onclick="copyOneEmail('{{ r.email }}')">
+                              onclick="copyText('{{ r.email }}')">
                         Copy
                       </button>
                     {% endif %}
@@ -133,7 +134,7 @@
                   <td>
                     {% if r.email %}
                       <a href="im:{{ r.email }}" class="text-decoration-none">
-                        <i class="bi bi-chat-dots me-1" onclick="copyOneEmail('{{ r.email }}')"></i>
+                        <i class="bi bi-chat-dots me-1" onclick="copyText('{{ r.email }}')"></i>
                       </a>
                     {% else %} — {% endif %}
                   </td>

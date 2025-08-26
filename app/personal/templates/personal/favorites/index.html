@@ -77,7 +77,9 @@
   <div class="input-group input-group-sm" style="width: 100%;">
     <input id="searchBox" type="text" class="form-control"
            placeholder="Type to search (real-time)">
-    <button type="button" class="btn btn-outline-primary" onclick="copySelectedUrls()">
+    <button type="button" class="btn btn-outline-primary"
+        onclick="copyText(Array.from(document.querySelectorAll('.row-check:checked'))
+          .map(cb => cb.getAttribute('data-url')).filter(Boolean).join(', '))">
       Copy Selected
     </button>
   </div>
@@ -147,7 +149,7 @@
       <td>
         {% if r.url %}
           <button type="button" class="btn btn-sm btn-outline-secondary"
-                  onclick="copyOneUrl('{{ r.url }}')">
+                  onclick="copyText('{{ r.url }}')">
             Copy
           </button>
         {% endif %}

@@ -65,6 +65,13 @@ EMAIL_RE = re.compile(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.IGNORECASE)
 def _valid_email(s: str) -> bool:
     return bool(EMAIL_RE.match((s or "").strip()))
 
+def _norm_email(s: str) -> str:
+    """Normalize email for duplicate detection."""
+    return (s or "").strip().lower()
+
+def _email_exists(rows: list[dict], email_norm: str) -> bool:
+    return any(_norm_email(r.get("email")) == email_norm for r in rows)
+
 # ===== views =====
 @contacts_bp.get("/")
 def index():
@@ -116,12 +123,24 @@ def add_one():
         flash("Invalid email address.", "danger")
         return redirect(url_for("contacts.index"))
 
+    email_norm = _norm_email(email)
     rows = _load_rows()
-    rows.append({"name": name, "email": email, "phone": phone,
-                 "company": company, "role": role, "remarks": remarks})
+    if _email_exists(rows, email_norm):
+        flash("That email already exists in Contacts.", "warning")
+        return redirect(url_for("contacts.index"))
+
+    rows.append({
+        "name": name,
+        "email": email_norm,     # store normalized
+        "phone": phone,
+        "company": company,
+        "role": role,
+        "remarks": remarks,
+    })
     _save_rows(rows)
     flash("Contact added (saved to CSV).", "success")
     return redirect(url_for("contacts.index"))
+
 
 @contacts_bp.post("/import")
 def import_csv():
@@ -135,30 +154,47 @@ def import_csv():
         return redirect(url_for("contacts.index"))
 
     existing = _load_rows()
-    added, skipped = 0, 0
+    added = skipped_invalid = skipped_duplicates = 0
+
     try:
         s = io.StringIO(f.stream.read().decode("utf-8", errors="ignore"))
         r = csv.DictReader(s)
         for row in r:
-            email = (row.get("email") or "").strip()
-            if not email or not _valid_email(email):
-                skipped += 1
+            email_raw = (row.get("email") or "").strip()
+            if not email_raw or not _valid_email(email_raw):
+                skipped_invalid += 1
                 continue
+
+            email_norm = _norm_email(email_raw)
+            if _email_exists(existing, email_norm):
+                skipped_duplicates += 1
+                continue
+
             existing.append({
                 "name":    (row.get("name") or "").strip(),
-                "email":   email,
+                "email":   email_norm,  # store normalized
                 "phone":   (row.get("phone") or "").strip(),
                 "company": (row.get("company") or "").strip(),
                 "role":    (row.get("role") or "").strip(),
                 "remarks": (row.get("remarks") or "").strip(),
             })
             added += 1
+
         _save_rows(existing)
-        flash(f"Imported {added} contact(s), skipped {skipped}.", "info")
+        if added:
+            flash(f"Imported {added} contact(s).", "success")
+        if skipped_duplicates:
+            flash(f"Skipped {skipped_duplicates} duplicate email(s).", "warning")
+        if skipped_invalid:
+            flash(f"Skipped {skipped_invalid} invalid row(s).", "danger")
+        if not (added or skipped_duplicates or skipped_invalid):
+            flash("No rows processed from the CSV.", "warning")
+
     except Exception as e:
         flash(f"Import failed: {e}", "danger")
 
     return redirect(url_for("contacts.index"))
+
 
 @contacts_bp.get("/export")
 def export_csv():
@@ -171,3 +207,27 @@ def export_csv():
         as_attachment=True,
         download_name="contacts_export.csv"
     )
+
+@contacts_bp.get("/_migrate_contacts_normalize")
+def migrate_contacts_normalize():
+    rows = _load_rows()
+    seen = set()
+    new_rows = []
+    dup = 0
+    for r in rows:
+        em = _norm_email(r.get("email"))
+        if not em or em in seen:
+            dup += 1
+            continue
+        seen.add(em)
+        new_rows.append({
+            "name": r.get("name","").strip(),
+            "email": em,  # normalized
+            "phone": r.get("phone","").strip(),
+            "company": r.get("company","").strip(),
+            "role": r.get("role","").strip(),
+            "remarks": r.get("remarks","").strip(),
+        })
+    _save_rows(new_rows)
+    flash(f"Normalization complete. Removed {dup} duplicate/empty email rows.", "success")
+    return redirect(url_for("contacts.index"))
