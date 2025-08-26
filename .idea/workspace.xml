@@ -4,12 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c5bf0ce9-92ae-4687-9cd1-340d13f926d3" name="Changes" comment="">
+    <list default="true" id="c5bf0ce9-92ae-4687-9cd1-340d13f926d3" name="Changes" comment="update app &amp; copy feature">
+      <change afterPath="$PROJECT_DIR$/app/cucm_report/phone_dn_report.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/cucm_report/ris_report.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/cucm_report/sip_trunk.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/phone_dn_report/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/ris_report/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/sip_trunk/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/personal/contacts.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/personal/contacts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/personal/templates/personal/contacts/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/personal/templates/personal/contacts/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/personal/templates/personal/favorites/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/personal/templates/personal/favorites/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/cucm_report/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/cucm_report/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/cucm_report/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/cucm_report/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/ris-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/zz_ris_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/sip-trunk.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/cucm_report/templates/cucm_report/zz_sip_trunk.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -75,7 +83,20 @@
       <option name="presentableId" value="Default" />
       <updated>1756098609202</updated>
     </task>
+    <task id="LOCAL-00001" summary="update app &amp; copy feature">
+      <option name="closed" value="true" />
+      <created>1756218093777</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1756218093777</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update app &amp; copy feature" />
+    <option name="LAST_COMMIT_MESSAGE" value="update app &amp; copy feature" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
